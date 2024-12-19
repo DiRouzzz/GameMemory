@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Игра Мемори</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="vendor/react.development.js"></script>
+  <script src="vendor/react-dom.development.js"></script>
+  <script src="vendor/babel.min.js"></script>
+  <script src="data.js"></script>
+  <!-- Файл для настроек приложения -->
+  <script src="settings.js"></script>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    const container = document.getElementById('root');
+    const root = ReactDOM.createRoot(container);
+    root.render(<App images={images}/>);
+
+    function App({images = []}) {
+      // const finishedItems = [];
+      const [stepsCount, setStepsCount] = React.useState(0);
+      // TODO: добавьте состояние для угаданных пар карточек
+      const [finishedItems, setFinishedItems] = React.useState([]);
+      const checkItems = (firstItem, secondItem) => {
+        // TODO: реализуйте сравнение карточек в паре
+        const firstCard = images.find(({id}) => id === firstItem);
+        const secondCard = images.find(({id}) => id === secondItem);
+        // console.log('firstCard', firstCard);
+        // console.log('secondCard', secondCard);
+        // console.log({finishedItems});
+        
+        
+        
+
+        if(firstCard.url === secondCard.url){
+          setFinishedItems((items) => [...items, firstItem, secondItem]);
+        }
+        setStepsCount((i) => i + 1);
+      };
+
+      const isWin = finishedItems.length === images.length;
+
+      const handleReset = () => {
+        setFinishedItems([]);
+        setStepsCount(0);
+      }
+
+      // const modalClassName = isWin ? 'modal-box' : '';
+
+
+      return (
+        <section className="game container">
+          {/* TODO: отобразите прогресс игры */}
+          <Progress value={finishedItems.length} max={images.length} countOpen={finishedItems.length / 2} count={images.length / 2} />
+          <div className="steps">Шаг {stepsCount}</div>
+          <Grid
+            images={images}
+            finishedItems={finishedItems}
+            checkItems={checkItems}
+          />
+          {/* TODO% отобразите модальное окно при победе */}
+
+          {isWin && (
+            <Modal >
+              <h3 className="modal-caption">Победа!</h3>
+              <p className="modal-description">Вы собрали все пары за {stepsCount} шагов</p>
+              <button onClick={handleReset} className="button modal-button" type="button">Новая игра</button>
+              </Modal>
+          )}
+          
+            
+          
+
+         
+        </section>
+      );
+    }
+
+    function Modal({children}){
+      return (
+      <div className="modal">
+        <div className="modal-box">
+        {children}
+        </div>
+      </div>
+      )
+    }
+
+    function Grid({images = [], finishedItems, checkItems}) {
+      const [visibleItems, setVisibleItems] = React.useState([]);
+
+      const handleCardClick = (id) => {
+        if (finishedItems.includes(id) || visibleItems.includes(id)) {
+          return;
+        }
+        // TODO: напишите логику выбора пары карточек для сравнения
+
+        switch(visibleItems.length){
+          case 0:
+            setVisibleItems([id]);
+            break;
+          case 1:
+              setVisibleItems((items) => [...items, id]);
+              checkItems(visibleItems[0], id);
+              setTimeout(() => {
+              setVisibleItems([]);
+            }, TIMEOUT);
+            break;
+          default: 
+              setVisibleItems([]);
+        }
+        
+      };
+
+      return (
+        <ul className="cards">
+          {images.map((item) => (
+            <Card
+              key={item.id}
+              id={item.id}
+              url={item.url}
+              description={item.description}
+              isVisible={visibleItems.includes(item.id)}
+              isFinished={finishedItems.includes(item.id)}
+              onCardClick={handleCardClick}
+            />
+          ))}
+        </ul>
+      );
+    }
+
+    function Progress({value, max, countOpen, count}){
+      return (
+        <>
+        <div class="progress-wrapper">
+          <div class="progress" style={{width: `${value / max * 100}%`}}></div>
+        </div>
+        <p class="progress-description">Открыто <span>{countOpen}</span> / <span>{count}</span></p>
+        </>
+      )
+    }
+
+    function Card({url, description, id, isVisible, isFinished, onCardClick}) {
+      
+      const className = `${
+        isVisible ? 'card-show' : ''
+      } ${
+        isFinished ? 'card-finished' : ''
+      }`;
+
+      const handleClick = () => {
+        onCardClick(id);
+      };
+
+      return (
+        <li onClick={handleClick} className={`card ${className}`}>
+          <img
+            width="204" height="144"
+            src={url}
+            alt={description}
+          />
+        </li>
+      );
+    }
+  </script>
+</body>
+</html>
