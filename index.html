@@ -8,7 +8,6 @@
   <script src="vendor/react-dom.development.js"></script>
   <script src="vendor/babel.min.js"></script>
   <script src="data.js"></script>
-  <!-- Файл для настроек приложения -->
   <script src="settings.js"></script>
 </head>
 <body>
@@ -19,18 +18,11 @@
     root.render(<App images={images}/>);
 
     function App({images = []}) {
-      // const finishedItems = [];
       const [stepsCount, setStepsCount] = React.useState(0);
-      // TODO: добавьте состояние для угаданных пар карточек
       const [finishedItems, setFinishedItems] = React.useState([]);
       const checkItems = (firstItem, secondItem) => {
-        // TODO: реализуйте сравнение карточек в паре
         const firstCard = images.find(({id}) => id === firstItem);
         const secondCard = images.find(({id}) => id === secondItem);
-        // console.log('firstCard', firstCard);
-        // console.log('secondCard', secondCard);
-        // console.log({finishedItems});
-        
         
         
 
@@ -47,12 +39,10 @@
         setStepsCount(0);
       }
 
-      // const modalClassName = isWin ? 'modal-box' : '';
 
 
       return (
         <section className="game container">
-          {/* TODO: отобразите прогресс игры */}
           <Progress value={finishedItems.length} max={images.length} countOpen={finishedItems.length / 2} count={images.length / 2} />
           <div className="steps">Шаг {stepsCount}</div>
           <Grid
@@ -60,7 +50,6 @@
             finishedItems={finishedItems}
             checkItems={checkItems}
           />
-          {/* TODO% отобразите модальное окно при победе */}
 
           {isWin && (
             <Modal >
@@ -95,7 +84,6 @@
         if (finishedItems.includes(id) || visibleItems.includes(id)) {
           return;
         }
-        // TODO: напишите логику выбора пары карточек для сравнения
 
         switch(visibleItems.length){
           case 0:
